@@ -1,15 +1,29 @@
 import 'dart:math';
-
+import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
 
-void main() => runApp(MyApp());
+import 'package:provider/provider.dart';
+import './services/provider_game.dart';
+
+import './services/const.dart';
+import './widgets/screen_main.dart';
+
+void main() => runApp(MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => GameProvider()),
+      ],
+      child: MyApp(),
+    ));
 
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    SystemChrome.setEnabledSystemUIOverlays([SystemUiOverlay.bottom]);
     return MaterialApp(
-      title: 'SimonSays',
-      home: MemoryChamp(),
+      home: Scaffold(
+        backgroundColor: mainGameColors,
+        body: MainScreen(),
+      ),
     );
   }
 }
@@ -128,7 +142,7 @@ class _MemoryChampState extends State<MemoryChamp> {
         ),
         child: InkWell(
           borderRadius: BorderRadius.all(Radius.circular(10)),
-          onTap: () => playerPlays(selCur),
+          onTap: () => {}, //playerPlays(selCur),
           child: Padding(
             padding: EdgeInsets.all(1),
             child: Container(
@@ -147,48 +161,87 @@ class _MemoryChampState extends State<MemoryChamp> {
     );
   }
 
+  _colorBlock() {
+    return Container(
+      child: Text('data'),
+      color: Colors.red,
+    );
+  }
+
+  _colorBlockTest() {
+    double padval = 20.0;
+    Color temp = Colors.greenAccent;
+    return AnimatedContainer(
+      duration: Duration(milliseconds: 100),
+      child: GestureDetector(
+        onTap: () => {},
+        child: Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(10),
+            color: temp,
+          ),
+        ),
+      ),
+      padding: EdgeInsets.all(padval),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.black,
       body: Stack(
         children: <Widget>[
-          Row(
+          GridView.count(
+            childAspectRatio: 1 / 1.7,
+            crossAxisCount: 2,
+            mainAxisSpacing: 4,
+            crossAxisSpacing: 4,
             children: <Widget>[
-              Column(
-                children: <Widget>[
-                  colorBlocks(
-                    curSel: curSel,
-                    selCur: 'red',
-                    pickColor: Colors.red,
-                    pickText: 'Red',
-                  ),
-                  colorBlocks(
-                    curSel: curSel,
-                    selCur: 'yellow',
-                    pickColor: Colors.yellow,
-                    pickText: 'Yellow',
-                  ),
-                ],
-              ),
-              Column(
-                children: <Widget>[
-                  colorBlocks(
-                    curSel: curSel,
-                    selCur: 'green',
-                    pickColor: Colors.green,
-                    pickText: 'Green',
-                  ),
-                  colorBlocks(
-                    curSel: curSel,
-                    selCur: 'blue',
-                    pickColor: Colors.blue,
-                    pickText: 'Blue',
-                  ),
-                ],
-              )
+              _colorBlock(),
+              _colorBlockTest(),
+              _colorBlock(),
+              _colorBlock()
             ],
           ),
+
+          // Row(
+          //   children: <Widget>[
+          //     Column(
+          //       children: <Widget>[
+          //         colorBlocks(
+          //           curSel: curSel,
+          //           selCur: 'red',
+          //           pickColor: Colors.red,
+          //           pickText: 'Red',
+          //         ),
+          //         colorBlocks(
+          //           curSel: curSel,
+          //           selCur: 'yellow',
+          //           pickColor: Colors.yellow,
+          //           pickText: 'Yellow',
+          //         ),
+          //       ],
+          //     ),
+          //     Column(
+          //       children: <Widget>[
+          //         colorBlocks(
+          //           curSel: curSel,
+          //           selCur: 'green',
+          //           pickColor: Colors.green,
+          //           pickText: 'Green',
+          //         ),
+          //         colorBlocks(
+          //           curSel: curSel,
+          //           selCur: 'blue',
+          //           pickColor: Colors.blue,
+          //           pickText: 'Blue',
+          //         ),
+          //       ],
+          //     )
+          //   ],
+          // ),
+
           Positioned(
             child: Text(
               curSel,
@@ -226,24 +279,15 @@ class _MemoryChampState extends State<MemoryChamp> {
               ? Positioned(
                   child: Material(
                     color: Colors.transparent,
-                    child: Ink(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(150),
-                        color: Colors.blueGrey,
-                        border: Border.all(color: Colors.black, width: 2),
-                      ),
-                      child: InkWell(
-                        borderRadius: BorderRadius.circular(150),
-                        onTap: () => computerPlays(),
-                        child: Container(
-                          width: 150,
-                          height: 150,
-                          child: Icon(
-                            Icons.play_arrow,
-                            color: Colors.white,
-                            size: 100,
-                          ),
-                        ),
+                    child: RaisedButton(
+                      onPressed: () => computerPlays(),
+                      color: Colors.blueGrey,
+                      padding: EdgeInsets.all(20),
+                      shape: CircleBorder(),
+                      child: Icon(
+                        Icons.play_arrow,
+                        color: Colors.white,
+                        size: 100,
                       ),
                     ),
                   ),
